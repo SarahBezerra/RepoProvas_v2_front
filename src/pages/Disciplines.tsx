@@ -1,4 +1,5 @@
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SearchIcon from '@mui/icons-material/Search';
 import {
   Accordion,
   AccordionDetails,
@@ -26,12 +27,13 @@ function Disciplines() {
   const { token } = useAuth();
   const [terms, setTerms] = useState<TestByDiscipline[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [disciplineInput, setDisciplineInput] = useState("");
 
   useEffect(() => {
     async function loadPage() {
       if (!token) return;
 
-      const { data: testsData } = await api.getTestsByDiscipline(token);
+      const { data: testsData } = await api.getTestsByDiscipline(token, "");
       setTerms(testsData.tests);
       const { data: categoriesData } = await api.getCategories(token);
       setCategories(categoriesData.categories);
@@ -39,11 +41,30 @@ function Disciplines() {
     loadPage();
   }, [token]);
 
+  function handleInputChange(e: any) {
+    setDisciplineInput(e.target.value);
+  }
+
+  async function searchDiscipline(){
+    if (!token) return;
+
+    const { data: testsData } = await api.getTestsByDiscipline(token, disciplineInput);
+    setTerms(testsData.tests);
+    const { data: categoriesData } = await api.getCategories(token);
+    setCategories(categoriesData.categories);
+  }
+
   return (
     <>
       <TextField
         sx={{ marginX: "auto", marginBottom: "25px", width: "450px" }}
         label="Pesquise por disciplina"
+        value={disciplineInput}
+        onChange={handleInputChange}
+        InputProps={{
+        endAdornment: (
+            <SearchIcon onClick={searchDiscipline}/>
+        ), }}
       />
       <Divider sx={{ marginBottom: "35px" }} />
       <Box

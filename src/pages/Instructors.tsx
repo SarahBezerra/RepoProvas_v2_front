@@ -1,4 +1,5 @@
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SearchIcon from '@mui/icons-material/Search';
 import {
   Accordion,
   AccordionDetails,
@@ -27,12 +28,13 @@ function Instructors() {
     TestByTeacher[]
   >([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [instructorInput, setInstructorInput] = useState("");
 
   useEffect(() => {
     async function loadPage() {
       if (!token) return;
 
-      const { data: testsData } = await api.getTestsByTeacher(token);
+      const { data: testsData } = await api.getTestsByTeacher(token, "");
       setTeachersDisciplines(testsData.tests);
       const { data: categoriesData } = await api.getCategories(token);
       setCategories(categoriesData.categories);
@@ -40,11 +42,30 @@ function Instructors() {
     loadPage();
   }, [token]);
 
+  function handleInputChange(e: any) {
+    setInstructorInput(e.target.value);
+  }
+
+  async function searchInstructor(){
+    if (!token) return;
+
+    const { data: testsData } = await api.getTestsByTeacher(token, instructorInput);
+    setTeachersDisciplines(testsData.tests);
+    const { data: categoriesData } = await api.getCategories(token);
+    setCategories(categoriesData.categories);
+  }
+
   return (
     <>
       <TextField
         sx={{ marginX: "auto", marginBottom: "25px", width: "450px" }}
         label="Pesquise por pessoa instrutora"
+        value={instructorInput}
+        onChange={handleInputChange}
+        InputProps={{
+        endAdornment: (
+            <SearchIcon onClick={searchInstructor}/>
+        ), }}
       />
       <Divider sx={{ marginBottom: "35px" }} />
       <Box
