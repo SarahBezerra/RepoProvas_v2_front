@@ -1,5 +1,4 @@
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import SearchIcon from '@mui/icons-material/Search';
+import { ExpandMore, Search } from "@mui/icons-material";
 import {
   Accordion,
   AccordionDetails,
@@ -63,7 +62,7 @@ function Disciplines() {
         onChange={handleInputChange}
         InputProps={{
         endAdornment: (
-            <SearchIcon onClick={searchDiscipline}/>
+            <Search onClick={searchDiscipline}/>
         ), }}
       />
       <Divider sx={{ marginBottom: "35px" }} />
@@ -113,7 +112,7 @@ function TermsAccordions({ categories, terms }: TermsAccordionsProps) {
     <Box sx={{ marginTop: "50px" }}>
       {terms.map((term) => (
         <Accordion sx={{ backgroundColor: "#FFF" }} key={term.id}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <AccordionSummary expandIcon={<ExpandMore />}>
             <Typography fontWeight="bold">{term.number} Período</Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -147,7 +146,7 @@ function DisciplinesAccordions({
           sx={{ backgroundColor: "#FFF", boxShadow: "none" }}
           key={discipline.id}
         >
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <AccordionSummary expandIcon={<ExpandMore />}>
             <Typography fontWeight="bold">{discipline.name}</Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -227,27 +226,62 @@ interface TestsProps {
   categoryId: number;
 }
 
+async function testView(token: string | null, testId: number){
+  if(!token) return;
+  await api.testView(token, testId);
+}
+
 function Tests({
   categoryId,
   testsWithTeachers: testsWithDisciplines,
 }: TestsProps) {
+  const { token } = useAuth();
+
   return (
     <>
       {testsWithDisciplines.map((testsWithDisciplines) =>
         testsWithDisciplines.tests
           .filter((test) => testOfCategory(test, categoryId))
           .map((test) => (
-            <Typography key={test.id} color="#878787">
+            <Typography 
+              key={test.id} 
+              color="#878787" 
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
               <Link
                 href={test.pdfUrl}
                 target="_blank"
                 underline="none"
                 color="inherit"
+                onClick={() => { testView(token, test.id) }}
               >{`${test.name} (${testsWithDisciplines.teacherName})`}</Link>
+              <span style={{
+                backgroundColor: "#A9A9A9", 
+                color: "white", 
+                width: "20px", 
+                height: "20px", 
+                marginRight: "10px", 
+                paddingTop: "2px",
+                borderRadius: "50px", 
+                textAlign: "center",
+                fontSize: "12px",
+              }}
+              ><TestViews key={test.id} views={test}></TestViews>
+              </span>  
             </Typography>
           ))
       )}
     </>
+  );
+}
+
+function TestViews(views: any) {
+  return (
+    <span>{views.views.testView.length}</span>
   );
 }
 

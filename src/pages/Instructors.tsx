@@ -1,5 +1,4 @@
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import SearchIcon from '@mui/icons-material/Search';
+import { ExpandMore, Search } from "@mui/icons-material";
 import {
   Accordion,
   AccordionDetails,
@@ -64,7 +63,7 @@ function Instructors() {
         onChange={handleInputChange}
         InputProps={{
         endAdornment: (
-            <SearchIcon onClick={searchInstructor}/>
+            <Search onClick={searchInstructor}/>
         ), }}
       />
       <Divider sx={{ marginBottom: "35px" }} />
@@ -122,7 +121,7 @@ function TeachersDisciplinesAccordions({
     <Box sx={{ marginTop: "50px" }}>
       {teachers.map((teacher) => (
         <Accordion sx={{ backgroundColor: "#FFF" }} key={teacher}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <AccordionSummary expandIcon={<ExpandMore />}>
             <Typography fontWeight="bold">{teacher}</Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -212,20 +211,54 @@ interface TestsProps {
   tests: Test[];
 }
 
+async function testView(token: string | null, testId: number){
+  if(!token) return;
+  await api.testView(token, testId);
+}
+
 function Tests({ tests, disciplineName }: TestsProps) {
+  const { token } = useAuth();
   return (
     <>
       {tests.map((test) => (
-        <Typography key={test.id} color="#878787">
+        <Typography 
+          key={test.id} 
+          color="#878787"
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Link
             href={test.pdfUrl}
             target="_blank"
             underline="none"
             color="inherit"
+            onClick={() => { testView(token, test.id) }}
           >{`${test.name} (${disciplineName})`}</Link>
+          <span style={{
+            backgroundColor: "#A9A9A9", 
+            color: "white", 
+            width: "20px", 
+            height: "20px", 
+            marginRight: "10px", 
+            paddingTop: "2px",
+            borderRadius: "50px", 
+            textAlign: "center",
+            fontSize: "12px",
+            }}
+          ><TestViews key={test.id} views={test}></TestViews>
+          </span>
         </Typography>
       ))}
     </>
+  );
+}
+
+function TestViews(views: any) {
+  return (
+    <span>{views.views.testView.length}</span>
   );
 }
 
