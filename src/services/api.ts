@@ -54,11 +54,24 @@ export interface Category {
   name: string;
 }
 
+export interface DisciplineName {
+  id: number;
+  name: string;
+}
+
 export interface Test {
   id: number;
   name: string;
   pdfUrl: string;
   category: Category;
+}
+
+export interface TestFormData {
+  testTitle: string;
+  testPdf: string;
+  category: string;
+  discipline: string;
+  instructor: string;
 }
 
 export type TestByDiscipline = Term & {
@@ -92,9 +105,24 @@ async function getCategories(token: string) {
   return baseAPI.get<{ categories: Category[] }>("/categories", config);
 }
 
+async function getDisciplines(token: string) {
+  const config = getConfig(token);
+  return baseAPI.get<{ disciplines: DisciplineName[] }>("/disciplines", config);
+}
+
+async function getTeachersByDiscipline(token: string, disciplineName: string) {
+  const config = getConfig(token);
+  return baseAPI.get<{ teachers: Teacher[] }>(`/teachers/${disciplineName}`, config);
+}
+
 async function testView(token: string, testId: number) {
   const config = getConfig(token);
   return baseAPI.get(`/tests/views/${testId}`, config);
+}
+
+async function createTest(test: TestFormData, token: string) {
+  const config = getConfig(token);
+  await baseAPI.post("/tests/create", test, config);
 }
 
 const api = {
@@ -103,7 +131,10 @@ const api = {
   getTestsByDiscipline,
   getTestsByTeacher,
   getCategories,
+  getDisciplines,
+  getTeachersByDiscipline,
   testView,
+  createTest,
 };
 
 export default api;

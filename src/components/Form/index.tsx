@@ -6,6 +6,7 @@ const styles: SxProps = {
   justifyContent: "center",
   alignItems: "center",
   paddingTop: "55px",
+  marginBottom: "70px",
 };
 
 interface Props {

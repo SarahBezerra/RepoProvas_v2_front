@@ -93,7 +93,10 @@ function Instructors() {
           >
             Pessoa Instrutora
           </Button>
-          <Button variant="outlined" onClick={() => navigate("/app/adicionar")}>
+          <Button 
+            variant="outlined" 
+            onClick={() => navigate("/app/adicionar")}
+          >
             Adicionar
           </Button>
         </Box>
